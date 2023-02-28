@@ -1,0 +1,40 @@
+{% extends 'ItemsApp/base.html' %}
+
+{% block title %}My Favorites{% endblock %}
+
+{% block content %}
+<div class="item_panel">
+    <h2><u>Favorites</u></h2>
+    <table class="table table-dark">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if favorites %}
+            {% for item in item_list %}
+            <tr>
+                <td><a href="{% url 'ItemsApp/details' item.id %}"><img alt="{{ item.name }}" src="{{ item.icon }}"
+                            style="height: 75px; width: 75px"></a></td>
+                <td>{{ item.id }}</td>
+                <td>{{ item.name }}</td>
+                <td>
+                    <form action="{% url 'itemsApp_remove_favorite' %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="item_id" value="{{ item.id }}">
+                        <button type="submit">Remove from Favorites</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="5">You have no favorite items.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

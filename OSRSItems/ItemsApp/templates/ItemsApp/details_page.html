@@ -1,0 +1,71 @@
+{% extends 'ItemsApp/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Item Details{% endblock %}
+
+{% block content %}
+<div class="item_panel" method="POST" action="../details/">
+    {% for item in item_get %}
+    <!-- Using bootstrap crispy, create a nice panel for displaying the item information -->
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h2>{{ item.name }}</h2>
+            </div>
+            <div class="card-body">
+                <h4>Generic Information</h4>
+                <img src="{{ item.image }}" alt="{{ item.name }}" style="width: 50px; height: 50px; margin: 10px;">
+                <div class="row justify-content-center">
+                    <div class="col">
+                        <p>Item Type: {{ item.type }}</p>
+                        <p>Item Slot: {{ item.slot }}</p>
+                        <p>Attack Range: {{ item.range }}</p>
+                    </div>
+                </div>
+                <hr>
+                <!--Combat Stats-->
+                <div class="mt-2">
+                    <h4>Combat Stats</h4>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <p>Stab Attack: {{ item.atk_stab }}</p>
+                        <p>Slash Attack: {{ item.atk_slash }}</p>
+                        <p>Crush Attack: {{ item.atk_crush}}</p>
+                        <p>Magic Attack: {{ item.atk_magic }}</p>
+                        <p>Range Attack: {{ item.atk_range }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p>Stab Defence: {{ item.def_stab }}</p>
+                        <p>Slash Defence: {{ item.def_slash }}</p>
+                        <p>Crush Defence: {{ item.def_crush }}</p>
+                        <p>Magic Defence: {{ item.def_magic }}</p>
+                        <p>Range Defence: {{ item.def_range }}</p>
+                    </div>
+                </div>
+                <hr>
+                <!--Bonus Stats-->
+                <div class="mt-2">
+                    <h4>Bonus Stats</h4>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <p>Strength Bonus: {{ item.bns_strength }}</p>
+                        <p>Ranged Strength Bonus: {{ item.bns_range }}</p>
+                        <p>Magic Damage Bonus: {{ item.bns_magic }}</p>
+                        <p>Prayer Bonus: {{ item.bns_prayer }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="button-group mt-2 justify-content-center">
+            <a href="{% url 'select_item' %}">
+                <button class="btn btn-primary">Back</button>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
