@@ -33,55 +33,165 @@
                 </tr>
                 {% endfor %}
             </tbody>
-        </table>    
+        </table>
     </div>
+    <!--Add bootstrap pagination-->
+    <nav aria-label="Page navigation example">
+        <ul class="pagination d-flex justify-content-center">
+        </ul>
+    </nav>
 </div>
 
 <script type="text/javascript">
-    var modal = `
-                    <div class="modal fade" id="deleteItemModal" tabindex="-1" role="dialog" aria-labelledby="deleteItemModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="deleteItemModalLabel">Delete Item</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    Are you sure you want to delete this item?
-                                </div>
-                                <div class="modal-footer">
-                                    <input type="hidden" id="item_id" value="">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    <button type="submit" id="delete_button" class="btn btn-danger">Delete</button>
+    $(document).ready(function () {
+        var modal = `
+                        <div class="modal fade" id="deleteItemModal" tabindex="-1" role="dialog" aria-labelledby="deleteItemModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteItemModalLabel">Delete Item</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete this item?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <input type="hidden" id="item_id" value="">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" id="delete_button" class="btn btn-danger">Delete</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
-    $('body').append(modal);
+                    `;
+        $('body').append(modal);
 
-    $('#itemTable').on('click', '.btn-danger', function() {
-        $('#item_id').val($(this).val());
-        $('#deleteItemModal').modal('show');
-        $('#deleteItemModal').css('padding-right', '0px');
-    });
+        $('#itemTable').on('click', '.btn-danger', function () {
+            $('#item_id').val($(this).val());
+            $('#deleteItemModal').modal('show');
+            $('#deleteItemModal').css('padding-right', '0px');
+        });
 
-    $('#delete_button').on('click', function() {
-        var item_id = $('#item_id').val();
+        $('#delete_button').on('click', function () {
+            var item_id = $('#item_id').val();
 
-        $.ajax({
-            url: item_id + '/delete/',
-            success: function() {
+            $.ajax({
+                url: item_id + '/delete/',
+                success: function () {
                     alert('Item deleted successfully');
                     location.reload();
-            },
-            error: function(error) {
-                alert('Error deleting item!');
-                console.log(error);
-            }
+                },
+                error: function (error) {
+                    alert('Error deleting item!');
+                    console.log(error);
+                }
+            });
         });
+
+
+        // Add pagination, shows 25 rows per page
+        // Get the total number of rows
+        var totalRows = $('#itemTable tbody tr').length;
+        //get the total number of pages rounded up
+        var totalPages = Math.ceil(totalRows / 25);
+        // Only show the pagination if there is more than one page
+        if (totalPages > 1) {
+            // Loop through each page and add the page number to the pagination
+            for (var i = 0; i < totalPages; i++) {
+                var pageNum = i + 1;
+                $('.pagination').append('<li class="page-item"><a class="page-link" href="#">' + pageNum + '</a></li> ');
+            }
+            // Only show the first 10 page numbers
+            $('.pagination li').slice(10).hide();
+            // Hide all the rows
+            $('#itemTable tbody tr').hide();
+            // Show the first 25 rows
+            $('#itemTable tbody tr').slice(0, 25).show();
+            // Add an active class to the first page link
+            $('.pagination li:first-child').addClass('active');
+            // Handle click events on the pagination links
+            $('.pagination li a').on('click', function () {
+                // Get the page number from the link
+                var page = $(this).text();
+                // Remove the current active class
+                $('.pagination li').removeClass('active');
+                // Add the active class to the clicked link
+                $(this).parent().addClass('active');
+                // Hide all the rows
+                $('#itemTable tbody tr').hide();
+                // Calculate the start and end row indexes
+                var startIndex = (page * 25) - 25;
+                var endIndex = startIndex + 25;
+                // Show the rows between the start and end indexes
+                $('#itemTable tbody tr').slice(startIndex, endIndex).show();
+                // Get the total pagination a links in the pagination that do not have a style of display: none
+                var totalLinks = $('.pagination li').not(':hidden').length;
+                // Store them into an array
+                var links = [];
+                $('.pagination li').not(':hidden').each(function () {
+                    links.push($(this).text());
+                });
+                // If the page clicked is the last page in totalLinks, the show the next 10 pages and hide the previous 10 pages
+                if (page == links[totalLinks - 1]) {
+                    //Hide the current 10 pages from the array
+                    for (var i = 0; i < 10; i++) {
+                        $('.pagination li a').each(function () {
+                            if ($(this).text() == links[i]) {
+                                $(this).parent().hide();
+                                // Add active class to the first page link in the next 10 pages
+                                $('.pagination li a').each(function () {
+                                    if ($(this).text() == links[1]) {
+                                        $(this).parent().addClass('active');
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    // Get the next 10 pages and store them into an array
+                    var nextLinks = [];
+                    for (var i = 0; i < 10; i++) {
+                        nextLinks.push(parseInt(links[9]) + i + 1);
+                    }
+                    // Show the next 10 pages
+                    for (var i = 0; i < 10; i++) {
+                        $('.pagination li a').each(function () {
+                            if ($(this).text() == nextLinks[i]) {
+                                $(this).parent().show();
+                            }
+                        });
+                    }
+                }
+                // Do the same as above but backwards
+                if (page == links[0]) {
+                    for (var i = 0; i < 10; i++) {
+                        $('.pagination li a').each(function () {
+                            if ($(this).text() == links[i]) {
+                                $(this).parent().hide();
+                                // Add active class to the last page link in the previous 10 pages
+                                $('.pagination li a').each(function () {
+                                    if ($(this).text() == links[9]) {
+                                        $(this).parent().addClass('active');
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    var prevLinks = [];
+                    for (var i = 0; i < 10; i++) {
+                        prevLinks.push(parseInt(links[0]) - i - 1);
+                    }
+                    for (var i = 0; i < 10; i++) {
+                        $('.pagination li a').each(function () {
+                            if ($(this).text() == prevLinks[i]) {
+                                $(this).parent().show();
+                            }
+                        });
+                    }
+                }
+            });
+        }
     });
 </script>
 {% endblock %}
