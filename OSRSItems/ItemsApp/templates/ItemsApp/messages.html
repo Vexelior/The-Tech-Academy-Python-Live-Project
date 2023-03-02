@@ -23,5 +23,10 @@
       alerts.style.margin = "0";
       alerts.style.left = "0";
       alerts.style.textAlign = "center";
+
+      if (alerts == null) {
+        // Delete the alerts div if there are no alerts
+        alerts.remove();
+      }
     });
 </script>
