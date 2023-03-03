@@ -1,3 +1,4 @@
+import json
 from django.http import HttpResponseNotAllowed
 import requests
 from bs4 import BeautifulSoup
@@ -76,8 +77,10 @@ def delete_item(request, pk):
     # If the item is not null, delete the item.
     if item is not None:
         item.delete()
+        messages.success(request, 'Item deleted successfully.')
         return redirect('select_item')
     else:
+        messages.error(request, 'Item could not be deleted.')
         return redirect('select_item')
 
 def api(request):
@@ -122,22 +125,33 @@ def api(request):
 
     return render(request, 'ItemsApp/api.html', content)
 
-def books_scraped(request):
-    # Webpage request to grab the skeleton of the web page.
-    page = requests.get('http://books.toscrape.com/')
+def scrape(request):
+    # OSRS account stats lookup for scraping.
+    url = "https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1=vexelior"
+    response = requests.get(url)
+    html_content = response.content
 
-    # Grabs the page source and stores it into the variable 'soup'.
-    soup = BeautifulSoup(page.content, 'html.parser')
+    soup = BeautifulSoup(html_content, 'html.parser')
 
-    # Book list inside of the section tag.
-    books = soup.find('section')
+    # Find the table that contains your stats and level
+    table = soup.find_all('table')[0]
+    table_rows = table.find_all('tr')
 
-    """Titles"""
-    book_titles = books.select(".product_pod h3")
-    titles = [t.get_text() for t in book_titles]
+    # Extract and print your stats and level
+    account_data = []
+    for row in table_rows:
+        cols = row.find_all('td')
+        cols = [ele.text.strip() for ele in cols]
+        account_data.append([ele for ele in cols if ele])
 
-    content = {'titles': titles}
-
+    # Write the data to a JSON file
+    for data in account_data:
+        # Store the data into JSON
+        with open('account_data.json', 'w') as f:
+            json.dump(data, f, indent=4)
+    
+    content = {'account_data': account_data}
+    print(account_data)
     return render(request, 'ItemsApp/scrape.html', content)
 
 
@@ -186,6 +200,12 @@ def show_favorites(request):
     if request.method == 'POST':
         item_id = request.POST['item_id']
         item = get_object_or_404(Item, id=item_id)
+
+        # if there is already a favorite for this item, don't create a new one
+        if Favorites.objects.filter(user=request.user, item=item).exists():
+            messages.error(request, 'This item is already in your favorites.')
+            return redirect('itemsApp_favorites')
+
         favorite = Favorites(user=request.user, item=item)
         favorite.save()
     
@@ -195,17 +215,14 @@ def show_favorites(request):
 
 
 @login_required
-def remove_favorite(request):
-    if request.method == 'POST':
-        item_id = request.POST['item_id']
-        try:
-            # Get the favorite object associated with the item and user
-            favorite = Favorites.objects.get(item_id=item_id, user=request.user)
-            # Delete the favorite object
-            favorite.delete()
-            messages.success(request, f'{favorite.item.name} has been removed.')
-        except Favorites.DoesNotExist:
-            messages.error(request, 'The selected item is not in your favorites.')
+def delete_favorite(request, pk):
+    pk = int(pk)
+    # look through the database for the favorite in the item_id column with the given pk
+    favorite = get_object_or_404(Favorites, item_id=pk)
+    if favorite is not None:
+        favorite.delete()
+        messages.success(request, f'{favorite.item.name} has been removed.')
         return redirect('itemsApp_favorites')
     else:
-        return HttpResponseNotAllowed(['POST'])
+        messages.error(request, 'The selected item is not in your favorites.')
+        return redirect('itemsApp_favorites')

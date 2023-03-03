@@ -11,12 +11,12 @@ urlpatterns = [
     path('edit_item/', views.edit_page, name="edit_page"),
     path('details/<int:pk>/delete/', views.delete_item, name="delete_item"),
     path('api/', views.api, name="api"),
-    path('scrape/', views.books_scraped, name="book_scrape"),
+    path('scrape/', views.scrape, name="scrape"),
     path('login_modal/', views.login_modal, name="itemsApp_login_modal"),
     path('create_account/', views.register, name='create_account'),
     path('login/', LoginView.as_view(), name="itemsApp_login"),
     path('logout/', views.logout_account, name="itemsApp_logout"),
     path('favorites/', views.show_favorites, name="itemsApp_favorites"),
-    path('favorites/remove_favorite/', views.remove_favorite, name='itemsApp_remove_favorite'),
+    path('favorites/<int:pk>/delete/', views.delete_favorite, name='itemsApp_delete_favorite'),
 ]
 

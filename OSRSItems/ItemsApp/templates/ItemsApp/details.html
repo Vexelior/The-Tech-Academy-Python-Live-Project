@@ -91,7 +91,7 @@
                     `;
     $('body').append(modal);
 
-    $('#itemTable').on('click', '.btn-danger', function () {
+    $('#myTable').on('click', '.btn-danger', function () {
         $('#item_id').val($(this).val());
         $('#deleteItemModal').modal('show');
         $('#deleteItemModal').css('padding-right', '0px');
@@ -108,7 +108,6 @@
             },
             error: function (error) {
                 alert('Error deleting item!');
-                console.log(error);
             }
         });
     });

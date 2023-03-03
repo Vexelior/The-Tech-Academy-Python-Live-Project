@@ -4,15 +4,15 @@
   <li class="nav-item"><a class="nav-link" href="{% url 'edit_page' %}">Edit Item</a></li>
   <li class="nav-item"><a class="nav-link" href="{% url 'select_item' %}">Item List</a></li>
   <li class="nav-item"><a class="nav-link" href="{% url 'api' %}">API</a></li>
-  <li class="nav-item"><a class="nav-link" href="{% url 'book_scrape' %}">Scraper</a></li>
+  <li class="nav-item"><a class="nav-link" href="{% url 'scrape' %}">Scraper</a></li>
   {% if user.is_authenticated %}
   <div class="dropdown show ml-auto">
     <a class="nav-item dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
       aria-haspopup="true" aria-expanded="false">
       Hello, {{ user.username }}!
     </a>
-
     <div class="dropdown-menu nav-item" aria-labelledby="dropdownMenuLink">
+      <a class="dropdown-item nav-item" href="{% url 'itemsApp_favorites' %}">My Favorites</a>
       <a class="dropdown-item nav-item" href="{% url 'itemsApp_logout' %}">Logout</a>
     </div>
   </div>

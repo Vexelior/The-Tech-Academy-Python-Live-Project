@@ -6,17 +6,17 @@
 
 {% block content %}
 <div class="item_panel">
-    <h2><u>Scraped Book Titles</u></h2>
+    <h2 class="text-center"><u>Scrape</u></h2>
     <table class="table table-dark">
         <thead>
             <tr>
-                <th>Book Titles</th>
+                <th>Account Name: 'Vexelior'</th>
             </tr>
         </thead>
         <tbody>
-            {% for name in titles %}
+            {% for data in account_data %}
             <tr>
-                <td>{{ name }}</td>
+                <td>{{ data }}</td>
             </tr>
             {% endfor %}
         </tbody>
