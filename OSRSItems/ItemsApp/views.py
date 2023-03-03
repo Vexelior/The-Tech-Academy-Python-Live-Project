@@ -1,4 +1,5 @@
 import json
+import os
 from django.http import HttpResponseNotAllowed
 import requests
 from bs4 import BeautifulSoup
@@ -142,16 +143,31 @@ def scrape(request):
     for row in table_rows:
         cols = row.find_all('td')
         cols = [ele.text.strip() for ele in cols]
+        # Add all cols to the account_data list except the first four elements
         account_data.append([ele for ele in cols if ele])
+            
+    # Remove the first four elements of the list
+    account_data = account_data[4:]
 
-    # Write the data to a JSON file
-    for data in account_data:
-        # Store the data into JSON
-        with open('account_data.json', 'w') as f:
-            json.dump(data, f, indent=4)
+    # If there are any elements that are empty, remove them
+    account_data = [x for x in account_data if x]
     
+    # Create a dictionary for the account data
     content = {'account_data': account_data}
-    print(account_data)
+    
+    # Check for a folder named 'data' in the static folder
+    if not os.path.exists('data'):
+        os.makedirs('data')
+    else:
+        pass
+
+    if not os.path.exists('data/account_data.json'):
+        # Save the data to a JSON file
+        with open('data/account_data.json', 'w') as f:
+            json.dump(account_data, f)
+    else:
+        pass
+
     return render(request, 'ItemsApp/scrape.html', content)
 
 
