@@ -162,9 +162,8 @@ def scrape_search(request, name):
     # Create a new node at the beginning of the list for the account name
     account_data.insert(0, [name])
 
-    print(len(account_data))
-
     # if there is only the name in the list, the account does not exist
+    # This does not validate that the account exists, only that the account name was passed in
     if len(account_data) == 1:
         account_data = []
     
