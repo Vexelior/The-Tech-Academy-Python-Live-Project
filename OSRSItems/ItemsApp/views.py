@@ -1,7 +1,6 @@
-import json
 import os
-from django.http import HttpResponseNotAllowed
 import requests
+import json
 from bs4 import BeautifulSoup
 from .forms import ItemForm
 from .models import Item, Favorites
@@ -126,11 +125,19 @@ def api(request):
 
     return render(request, 'ItemsApp/api.html', content)
 
-def scrape(request):
+
+def scrape_search(request, name):
+    print(name)
     # OSRS account stats lookup for scraping.
-    url = "https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1=vexelior"
+    url = "https://secure.runescape.com/m=hiscore_oldschool/hiscorepersonal?user1=" + name
     response = requests.get(url)
     html_content = response.content
+
+    # Check the status code of the response
+    if response.status_code != 200:
+        content = {'success': False, 'message': 'An error occurred while scraping the website.'}
+        messages.error(request, 'An error occurred while scraping the website.')
+        return render(request, 'ItemsApp/scrape_search.html', content)
 
     soup = BeautifulSoup(html_content, 'html.parser')
 
@@ -151,6 +158,15 @@ def scrape(request):
 
     # If there are any elements that are empty, remove them
     account_data = [x for x in account_data if x]
+
+    # Create a new node at the beginning of the list for the account name
+    account_data.insert(0, [name])
+
+    print(len(account_data))
+
+    # if there is only the name in the list, the account does not exist
+    if len(account_data) == 1:
+        account_data = []
     
     # Create a dictionary for the account data
     content = {'account_data': account_data}
@@ -166,7 +182,26 @@ def scrape(request):
         with open('data/account_data.json', 'w') as f:
             json.dump(account_data, f)
     else:
-        pass
+        # Write the data to the JSON file
+        with open('data/account_data.json', 'w') as f:
+            json.dump(account_data, f)
+
+    return render(request, 'ItemsApp/scrape.html', content)
+
+
+def scrape_page(request):
+    # Look for the account data JSON file
+    if os.path.exists('data/account_data.json'):
+        # Open the JSON file
+        with open('data/account_data.json', 'r') as f:
+            account_data = json.load(f)
+    else:
+        # If the file doesn't exist, redirect to the scrape page
+        messages.error(request, 'No account data found. Please enter a valid username.')
+        return redirect('scrape')
+    
+    # Create a dictionary for the account data
+    content = {'account_data': account_data}
 
     return render(request, 'ItemsApp/scrape.html', content)
 

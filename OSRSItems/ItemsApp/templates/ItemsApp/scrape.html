@@ -7,10 +7,22 @@
 {% block content %}
 <div class="item_panel">
     <h2 class="text-center"><u>Scrape</u></h2>
+    <div class="form-group mb-2 d-flex justify-content-center">
+        <input class="form-control" type="search" placeholder="Search..." aria-label="Search" id="myInput">
+    </div>
+    <div class="button-group mb-2">
+        <button class="btn btn-primary" type="button" id="search" onclick="search()">Search</button>
+    </div>
+    
+    {% if account_data %}
+    <!--Get the first node of the account_data and store it into a p element-->
+    <p class="text-center">
+        <span id="account-name">Account: <b>{{ account_data.0 }}</b></span>
+    </p>
     <table class="table table-dark">
         <thead>
             <tr>
-                <th>Account Name: 'Vexelior'</th>
+                <th>Data</th>
             </tr>
         </thead>
         <tbody>
@@ -21,5 +33,50 @@
             {% endfor %}
         </tbody>
     </table>
+    {% else %}
+    <p class="text-center">No data found!</p>
+    {% endif %}
 </div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        var input = document.getElementById("myInput");
+        input.addEventListener("keyup", function(event) {
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                document.getElementById("search").click();
+            }
+        });
+
+        var account_name = document.getElementById("account-name");
+        if (account_name != null) {
+            // Remove quotes and brackets from account name
+            if (account_name.innerHTML.includes("'") || account_name.innerHTML.includes('[') || account_name.innerHTML.includes(']' || account_name.innerHTML.includes('"'))) {
+                account_name.innerHTML = account_name.innerHTML.replace(/['"]+/g, '');
+                account_name.innerHTML = account_name.innerHTML.replace(/[\[\]]+/g, '');
+            }
+        }
+    });
+
+    function search() {
+        var input = document.getElementById("myInput");
+        var filter = input.value.toLowerCase();
+
+        if (filter == "") {
+            alert("Please enter an account name!");
+            return;
+        }
+
+        $.ajax({
+            url: 'search/' + filter + '/', 
+            success: function(data) {
+                alert("Data updated with account name: " + filter);
+                location.reload();
+            },
+            error: function(data) {
+                alert("Error!");
+            }
+        });
+    }
+</script>
 {% endblock %}
