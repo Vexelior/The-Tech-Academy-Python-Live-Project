@@ -153,3 +153,4 @@ cython_debug/
 
 # Database migration files
 OSRSItems/*/migrations/*
+data/account_data.json
