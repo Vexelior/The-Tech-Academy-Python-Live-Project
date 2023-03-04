@@ -12,7 +12,11 @@
     </div>
     <div class="button-group mb-2">
         <button class="btn btn-primary" type="button" id="search" onclick="search()">Search</button>
+        {% if account_data.0 %}
         <p class="text-center mt-2" id="account-name">Account Name: <b>{{ account_data.0 }}</b></p>
+        {% else %}
+        <p class="text-center mt-2" id="account-name"></p>
+        {% endif %}
     </div>
 
     {% if account_data %}
@@ -29,9 +33,9 @@
             <tr>
                 <td>
                     {{ data.0 }}
-                    <br>Rank: {{ data.1 }}
                     <br>Level: {{ data.2 }}
                     <br>XP: {{ data.3 }}
+                    <br>Rank: {{ data.1 }}
                 </td>
             </tr>
             {% endfor %}
