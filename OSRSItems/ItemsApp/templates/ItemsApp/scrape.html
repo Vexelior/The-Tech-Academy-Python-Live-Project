@@ -47,9 +47,9 @@
 </div>
 
 <script type="text/javascript">
-    $(document).ready(function() {
+    $(document).ready(function () {
         var input = document.getElementById("myInput");
-        input.addEventListener("keyup", function(event) {
+        input.addEventListener("keyup", function (event) {
             if (event.keyCode === 13) {
                 event.preventDefault();
                 document.getElementById("search").click();
@@ -110,11 +110,11 @@
         }
 
         $.ajax({
-            url: 'search/' + filter + '/', 
-            success: function(data) {
+            url: 'search/' + filter + '/',
+            success: function (data) {
                 location.reload();
             },
-            error: function(data) {
+            error: function (data) {
                 alert("Error!");
             }
         });

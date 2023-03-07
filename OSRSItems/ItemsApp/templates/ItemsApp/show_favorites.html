@@ -20,7 +20,8 @@
                 <td><a href="{% url 'item_details' item.id %}" id="name">{{ item.name }}</a></td>
                 <td>
                     <input type="hidden" name="item_id" value="{{ item.id }}">
-                    <button class="btn btn-danger" value="{{ item.id }}" title="Remove from favorites"><i class="fa fa-trash"></i></button>
+                    <button class="btn btn-danger" value="{{ item.id }}" title="Remove from favorites"><i
+                            class="fa fa-trash"></i></button>
                 </td>
             </tr>
             {% endfor %}

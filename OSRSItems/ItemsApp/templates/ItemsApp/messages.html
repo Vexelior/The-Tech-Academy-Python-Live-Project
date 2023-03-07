@@ -10,23 +10,23 @@
 {% endfor %}
 
 <script>
-    $(document).ready(function() {
-        $(".alert").fadeTo(2000, 500).slideUp(500, function(){
-          $(".alert").slideUp(1000);
-      });
-
-      var alerts = document.getElementById("alerts");
-      alerts.style.width = "100%";
-      alerts.style.position = "fixed";
-      alerts.style.top = "0";
-      alerts.style.zIndex = "1000";
-      alerts.style.margin = "0";
-      alerts.style.left = "0";
-      alerts.style.textAlign = "center";
-
-      if (alerts == null) {
-        // Delete the alerts div if there are no alerts
-        alerts.remove();
-      }
+  $(document).ready(function () {
+    $(".alert").fadeTo(2000, 500).slideUp(500, function () {
+      $(".alert").slideUp(1000);
     });
+
+    var alerts = document.getElementById("alerts");
+    alerts.style.width = "100%";
+    alerts.style.position = "fixed";
+    alerts.style.top = "0";
+    alerts.style.zIndex = "1000";
+    alerts.style.margin = "0";
+    alerts.style.left = "0";
+    alerts.style.textAlign = "center";
+
+    if (alerts == null) {
+      // Delete the alerts div if there are no alerts
+      alerts.remove();
+    }
+  });
 </script>
